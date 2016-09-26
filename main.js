@@ -36,7 +36,21 @@ function init() {
 
   cubeMesh = new THREE.Mesh(geometry, material );
   cubeMesh.position.z = -30;
-  scene.add( cubeMesh );
+  scene.add(cubeMesh);
+
+  var uniforms = {
+    texture: { type: 't', value: THREE.ImageUtils.loadTexture('images/skydome.jpg') }
+  };
+  var skyMaterial = new THREE.ShaderMaterial( {
+    uniforms: uniforms,
+    vertexShader: document.getElementById('sky-vertex').textContent, fragmentShader: document.getElementById('sky-fragment').textContent
+  });
+  // create Mesh with sphere geometry and add to the scene
+  var skyBox = new THREE.Mesh(new THREE.SphereGeometry(250, 60, 40), skyMaterial);
+  skyBox.scale.set(-1, 1, 1);
+  skyBox.eulerOrder = 'XZY';
+  skyBox.renderDepth = 1000.0;
+  scene.add(skyBox);
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );
