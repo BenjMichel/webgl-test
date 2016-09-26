@@ -8,6 +8,14 @@ var deltaTime;
 
 var particleSystem;
 
+var moveForward = false;
+var moveBackward = false;
+var moveLeft = false;
+var moveRight = false;
+var canJump = false;
+var prevTime = performance.now();
+var velocity = new THREE.Vector3();
+
 init();
 animate();
 
@@ -45,16 +53,31 @@ function animate() {
   cubeMesh.rotation.x += 1 * deltaTime;
   cubeMesh.rotation.y += 2 * deltaTime;
 
+  var time = performance.now();
+  var delta = ( time - prevTime ) / 1000;
+  velocity.x -= velocity.x * 10.0 * delta;
+  velocity.z -= velocity.z * 10.0 * delta;
+  // velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+  if ( moveForward ) velocity.z -= 400.0 * delta;
+  if ( moveBackward ) velocity.z += 400.0 * delta;
+  if ( moveLeft ) velocity.x -= 400.0 * delta;
+  if ( moveRight ) velocity.x += 400.0 * delta;
+
+  camera.translateX( velocity.x * delta );
+  camera.translateY( velocity.y * delta );
+  camera.translateZ( velocity.z * delta );
+  prevTime = time;
+
   render();
   requestAnimationFrame(animate);
 }
 
 
 function render() {
-  if (particleSystem) {
-    particleSystem.rotation.x += 0.01;
-    particleSystem.rotation.y += 0.02;
-  }
+  // if (particleSystem) {
+  //   particleSystem.rotation.x += 0.01;
+  //   particleSystem.rotation.y += 0.02;
+  // }
   renderer.render(scene, camera);
 }
 
@@ -107,3 +130,50 @@ function createParticleSystem() {
 
 particleSystem = createParticleSystem();
 scene.add(particleSystem);
+
+
+var onKeyDown = function ( event ) {
+  switch ( event.keyCode ) {
+    case 38: // up
+    case 87: // w
+      moveForward = true;
+      break;
+    case 37: // left
+    case 65: // a
+      moveLeft = true; break;
+    case 40: // down
+    case 83: // s
+      moveBackward = true;
+      break;
+    case 39: // right
+    case 68: // d
+      moveRight = true;
+      break;
+    case 32: // space
+      if ( canJump === true ) velocity.y += 350;
+      canJump = false;
+      break;
+  }
+};
+var onKeyUp = function ( event ) {
+  switch( event.keyCode ) {
+    case 38: // up
+    case 87: // w
+      moveForward = false;
+      break;
+    case 37: // left
+    case 65: // a
+      moveLeft = false;
+      break;
+    case 40: // down
+    case 83: // s
+      moveBackward = false;
+      break;
+    case 39: // right
+    case 68: // d
+      moveRight = false;
+      break;
+  }
+};
+document.addEventListener( 'keydown', onKeyDown, false );
+document.addEventListener( 'keyup', onKeyUp, false );
