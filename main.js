@@ -82,8 +82,26 @@ function animate() {
   camera.translateZ( velocity.z * delta );
   prevTime = time;
 
+  animateParticles();
+
   render();
   requestAnimationFrame(animate);
+}
+
+function animateParticles() {
+  if (particleSystem) {
+    const verts = particleSystem.geometry.vertices;
+    verts.map((vert) => {
+      let y = vert.y;
+      if (y < -200) {
+        y = (Math.random() * 400) - 200;
+      }
+      y -= (10 * deltaTime);
+      return Object.assign({}, vert, { y });
+    });
+    particleSystem.geometry.verticesNeedUpdate = true;
+    particleSystem.rotation.y -= 0.1 * deltaTime;
+  }
 }
 
 
