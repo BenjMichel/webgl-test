@@ -3,6 +3,7 @@ let scene;
 let renderer;
 let cubeMesh;
 let controls;
+let skyBox;
 
 let clock;
 let deltaTime;
@@ -48,7 +49,7 @@ function init() {
     fragmentShader: document.getElementById('sky-fragment').textContent,
   });
   // create Mesh with sphere geometry and add to the scene
-  const skyBox = new THREE.Mesh(new THREE.SphereGeometry(250, 60, 40), skyMaterial);
+  skyBox = new THREE.Mesh(new THREE.SphereGeometry(250, 60, 40), skyMaterial);
   skyBox.scale.set(-1, 1, 1);
   skyBox.eulerOrder = 'XZY';
   skyBox.renderDepth = 1000.0;
@@ -84,9 +85,12 @@ function animate() {
   if (moveLeft) velocity.x -= 400.0 * delta;
   if (moveRight) velocity.x += 400.0 * delta;
 
-  camera.translateX( velocity.x * delta );
-  camera.translateY( velocity.y * delta );
-  camera.translateZ( velocity.z * delta );
+  camera.translateX(velocity.x * delta);
+  camera.translateY(velocity.y * delta);
+  camera.translateZ(velocity.z * delta);
+  skyBox.translateX(velocity.x * delta);
+  skyBox.translateY(velocity.y * delta);
+  skyBox.translateZ(velocity.z * delta);
   prevTime = time;
 
   controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
